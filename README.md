@@ -20,7 +20,7 @@ For complete examples, check out the `examples` directory.
 
 #Reference
 
-## `EventSearchAPI.search(string phrase, int category, int page, function onSuccess)`
+## EventSearchAPI.search(string phrase, int category, int page, function onSuccess)
 
 `keywords` `string` search phrase to search
 `category` `int` id of category/genre to search (see `EventSearchAPI.getCategories()`)
