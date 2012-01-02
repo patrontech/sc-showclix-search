@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--
+    Slightly more in depth example that shows how to use categories
+    to filter results as well as how to load in more results.
+-->
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>Search Demo with Categories and Basic Paging</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+	<script src="jquery.tmpl.min.js" type="text/javascript"></script>
+	<script src="../../lib/EventSearchAPI.js" type="text/javascript"></script>
+
+	<style type="text/css">
+	    ul#guts {
+	        list-style:none;
+	        clear: both;
+	        padding: 0; margin: 0;
+	    }
+	    ul#categories {
+	        list-style: none;
+	    }
+	    ul#categories li {
+	        float: left;
+	        padding: 3px;
+	        margin: 3px;
+	        background: #eee;
+	        display: block;
+	    }
+	    ul#categories li.selected {
+	        background: yellow;
+	    }
+	    li.event {
+	        float: left;
+	    }
+	    li.event a {
+	        display: block;
+	        text-decoration: none;
+	        padding: 20px; margin: 10px;
+	        width: 150px; height: 150px;
+	        background: #ddd; color: #333;
+	        overflow: hidden;
+	    }
+	    li.event a:hover {
+            background: #bbb;
+	    }
+	    div#loadMore {
+	        clear:both;
+	    }
+	</style>
+</head>
+<body>
+    <div id="loadingIndicator" style="font-style: italic; position: fixed; top: 0; left: 0; z-index: 929299; background: #333; color: #fff; padding: 5px 10px; display:none; font-size: 17px">&#8593;&#8595;</div>
+    <form action="#" method="post" id="searchForm">
+        <input type="text" placeholder="Search..." name="search" id="search" />
+    </form>
+    <ul id="categories"></ul>
+    <ul id="guts"></ul>
+    <div id="loadMore" style="text-align:center; background: #eee; padding: 25px; clear: both;">Load More</a>
+
+<script id="tplEvent" type="text/x-jquery-tmpl">
+    <li class="event">
+        <a href="${listing_url}">
+            <strong>${event}</strong>
+            <em>${event_start}</em>
+            ${description}
+        </a>
+    </li>
+</script>
+
+
+<script type="text/javascript">
+
+    // DOM Elements
+    $cat    = $("#categories"),
+    $form   = $("#searchForm"),
+    $input  = $("#search"),
+    $more   = $("#loadMore"),
+    $tpl    = $("#tplEvent"),
+    $loader = $("#loadingIndicator"),
+    $results = $("#guts");
+
+    // Settings
+    var showClixId = 1;
+    var searchMax = 25;
+
+    // Bind the search stuff
+    var search = new EventSearchAPI(showClixId);
+    var sendSearch = function() {
+        var phrase = $input.val();
+        var category = $cat.data("selected");
+        $loader.show();
+        search.search(phrase, category, 1, function(events) {
+            $loader.hide();
+            // Wipe clean and load in more results
+            $results.empty().append($tpl.tmpl(events));
+            events.length == 0 ? $more.hide() : $more.show();
+        });
+    };
+    $form.submit(function() {
+        sendSearch();
+        return false;
+    });
+    $more.mouseover(function() {
+        search.more(function(events) {
+            $results.append($tpl.tmpl(events)); // Tack on more
+            events.length < searchMax && $more.hide(); // Hide if no more results
+        });
+    });
+
+    // Initial settings
+    $more.hide();
+    $loader.hide();
+    $cat.data("selected", null);
+
+    // Build the category list from the API.  This also leverages jQuery's
+    // `.data` method to store data of the inputs inline with the elements.
+    // this makes building custom UI widgets much easier to deal with.
+    // You could build a much simpler, less fancy version by just using
+    // a drop down.
+    var categories = search.getCategories();
+    $.each(categories, function() {
+        $cat.append(
+            $('<li>' + this[1] + '</li>')
+                .data("category", this[0])
+                .click(function() {
+                    $(".selected").removeClass("selected");
+                    // When we click on the selected element, we reset everything so nothing is selected
+                    var value = $cat.data("selected") != $(this).data("category") ? $(this).data("category") : null;
+                    if (value) $(this).addClass("selected");
+                    $cat.data("selected", value);
+                    // Fire off the search again
+                    sendSearch();
+                })
+        );
+    });
+</script>
+</body>
+</html>
