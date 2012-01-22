@@ -35,9 +35,9 @@
 
             // Bind the search stuff
             var searchAPI = new EventSearchAPI(partnerId);
-            $form.submit(function(events) {
+            $form.submit(function() {
                 var phrase = $input.val();
-                searchAPI.search(phrase, null, 1, function(events) {
+                searchAPI.search(phrase, null, null, 1, function(events) {
                     // Wipe clean
                     $results.empty();
                     // Append Each Result... for a cleaner solution, checkout out jQuery Templates

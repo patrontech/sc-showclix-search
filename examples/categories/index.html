@@ -92,7 +92,7 @@
         var phrase = $input.val();
         var category = $cat.data("selected");
         $loader.show();
-        search.search(phrase, category, 1, function(events) {
+        search.search(phrase, category, null, 1, function(events) {
             $loader.hide();
             // Wipe clean and load in more results
             $results.empty().append($tpl.tmpl(events));
