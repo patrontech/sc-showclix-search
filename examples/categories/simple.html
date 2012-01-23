@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <!--
+        This is a very basic example of how to use the JS ShowClix Search
+        library.  It simply uses the keyword entered in the search input field
+        on this page to send off a search to the ShowClix API.  It then appends
+        those results to a `ul`.
+
+        This example does *not* take advantage of paging results nor does it
+        utilize filtering by category.  Check out other examples to see how to
+        use this.
+    -->
+    <head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    	<title>Search Demo</title>
+    </head>
+    <body>
+        <form action="#" method="post" id="searchForm">
+            <input type="text" placeholder="Search..." name="search" id="search" />
+            <select name="genre" id="genre">
+                <option value="0">-- Genre --</option>
+            </select>
+        </form>
+        <ul id="guts"></ul>
+
+    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+    	<script src="../../lib/EventSearchAPI.js" type="text/javascript"></script>
+        <script type="text/javascript">
+
+            // DOM Elements
+            $form   = $("#searchForm"),
+            $input  = $("#search"),
+            $genre  = $("#genre"),
+            $none   = $("#no-results"),
+            $loading = $("#loading"),
+            $results = $("#guts");
+
+            var partnerId = 1;
+
+            // Bind the search stuff
+            var searchAPI = new EventSearchAPI(partnerId);
+
+            // Hook up the genre options
+            var categories = searchAPI.getCategories();
+            for (i in categories) {
+                $genre.append('<option value="' + categories[i][0] + '">' + categories[i][1] + '</option>');
+            }
+
+            // Method to handle the response from Search API
+            var handleResults = function(events) {
+                // Wipe clean
+                $loading.hide();
+                $none.hide();
+                $results.empty();
+                if (!events || events.length === 0) {
+                    $none.show();
+                    return;
+                }
+                // Append Each Result...
+                $.each(events, function() {
+                    $results.append("<li><a href=\"" + this.listing_url + "\">" + this.event + "</a></li>");
+                });
+            };
+
+            // Bind to a form
+            $form.submit(function() {
+                var phrase =    $input.val();
+                var category =  $genre.val() || null;
+                $loading.show();
+                searchAPI.search(phrase, null, category, 1, handleResults);
+                return false;
+            });
+
+            // Fire off a search if the url contained a hash
+            $(function() {
+                if (location.hash) {
+                    $loading.show();
+                    searchAPI.search(location.hash.substring(1), null, null, 1, handleResults);
+                }
+            });
+        </script>
+    </body>
+</html>
