@@ -10,7 +10,7 @@ Here is a trivial example of the main method in the library, EventSearchAPI.sear
 
     var phrase = document.getElementById("search_input").value;
     var api = new EventSearchAPI(1);
-    api.search(phrase, null, 0, function(events) {
+    api.search(phrase, null, "date", 0, function(events) {
         for (i in events) {
             console.log(events[i].event);
         }
