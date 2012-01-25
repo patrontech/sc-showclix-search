@@ -20,10 +20,15 @@ For complete examples, check out the `examples` directory.
 
 #Reference
 
-## EventSearchAPI.search(string phrase, int category, int page, function onSuccess)
+## EventSearchAPI.search(string phrase, int category, string sort, int page, function onSuccess)
 
 `keywords` `string` search phrase to search
+
 `category` `int` id of category/genre to search (see `EventSearchAPI.getCategories()`)
+
+`sort` `string` options: ("name", "date", "popularity")
+
 `page` `int` which page of results are we interested in (default 0)
+
 `onSuccess` `function(events, phrase, page)` callback called upon successful completion of a search.  `events` is an array of object literals
 containing event information
