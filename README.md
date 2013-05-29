@@ -20,6 +20,10 @@ For complete examples, check out the `examples` directory.
 
 #Reference
 
+## new EventSearchAPI(int partner)
+
+Instantiate a new EventSearchAPI object.  It takes a single paramter to identify the partner account to search.
+
 ## EventSearchAPI.search(string phrase, int category, string sort, int page, function onSuccess)
 
 `keywords` `string` search phrase to search
